@@ -21,7 +21,7 @@ write.table(avinput[1:90,], "90_loci.avinput", sep = "\t", quote = F, row.names=
 
 #annotate using ANNOVAR
 input_file <- "90_loci.avinput"
-annovar_folder <- "/Users/oswaldo/Documents/annovar/"
+annovar_folder <- ANNOVAR_FOLDER
 build <- "-buildver hg38"
 output_file <- "-out 90_loci.annoavinput"
 arguments <- "-dot2underline -remove -protocol refGene,knownGene,ensGene,gnomad211_exome,clinvar_20160302,dbnsfp30a -arg '-splicing_threshold=6','-splicing_threshold=6','-splicing_threshold=6',,, -operation g,g,g,f,f,f -otherinfo"
