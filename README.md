@@ -15,7 +15,10 @@ Epistasis has been proposed to underlie some of this "missing heritability" iden
 The concept of epistasis has been extensively studied in model systems, but its importance in humans continues to be a matter of debate (citation needed). One of the reasons for this discussion is that there is a no of consensus on the methods used to perform epistasis analyses and replication studies are required. There is an abundance of methods for the exploration of genetic interactions, including different statistical methods, machine learning and data mining techniques, each of them leading to a different result even when analyzing the same dataset (citation needed). The current project is a variant interaction pipeline built as part of the IPDGC x GP2 Hackathon 2021 Project to start a collaborative environment to generate a user friendly tool to investigate epistasis between pairs of variants provided by the user.
 
 ## Description of files/data
-1. Required software: PLINK / ANNOVAR / R
+1. Required software: 
+- R 3.6
+- PLINK 1.9
+- ANNOVAR
 
 2. Input files:
 - List of variants in PLINK binary format.
