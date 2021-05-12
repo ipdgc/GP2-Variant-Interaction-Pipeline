@@ -153,8 +153,11 @@ for (num in 1:length(resList))
 
 #plot
 matInput=as.matrix(matDf)
+fileName=str_glue('{outFilePrefix}_heatmap.png')
+fileName
+png(fileName)
 corrplot(matInput, is.corr = FALSE, type="upper")
-
+dev.off()
 
 
 
