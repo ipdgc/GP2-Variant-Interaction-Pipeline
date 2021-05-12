@@ -8,7 +8,7 @@ This is a variant interaction pipeline built as part of the IPDGC x GP2 Hackatho
 
 Genome-wide association studies (GWAS) have identified many common variants associated with complex diseases like Parkinson's disease. As GWAS sample sizes continue to grow, genetic variants with weaker effects on the phenotype are being discovered. It has become clear that GWAS-identified variants do not fully account for the heritability of many common diseases ([Manolio et al. 2009](https://www.nature.com/articles/nature08494)).
 
-Epistasis has been proposed to underlie some of this "missing heritability" identified in the post-GWAS era ([Ritchie et al. 2015](https://pubmed.ncbi.nlm.nih.gov/25403525/)). Epistasis occurs when there is an interaction between genetic variants. For example, an allele an locus 1 may prevent an alleles at locus 2 from manifesting ([Bateson 1909](https://scholar.google.com/scholar?q=Bateson,+W.+(1909)+Mendel%27s+Principles+of+Heredity.+Cambridge+University+Press,+Cambridge.)), a phenomenon known as masking.
+Epistasis has been proposed to underlie some of this "missing heritability" identified in the post-GWAS era, though this topic remains controversial ([Ritchie et al. 2015](https://pubmed.ncbi.nlm.nih.gov/25403525/); [Ritchie and Van Steen 2018](https://pubmed.ncbi.nlm.nih.gov/29862246/); [Bandres-Ciga et al. 2020](https://pubmed.ncbi.nlm.nih.gov/31991247/)).Epistasis occurs when there is an interaction between genetic variants. For example, an allele an locus 1 may prevent an alleles at locus 2 from manifesting ([Bateson 1909](https://scholar.google.com/scholar?q=Bateson,+W.+(1909)+Mendel%27s+Principles+of+Heredity.+Cambridge+University+Press,+Cambridge.)), a phenomenon known as masking.
 
 ## Description of files/data
 
