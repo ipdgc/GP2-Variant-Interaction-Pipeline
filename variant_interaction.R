@@ -1,6 +1,7 @@
 #load libraries
 library(tidyverse)
 library(data.table)
+library(pheatmap)
 
 #get user line arguments; change this
 #args = commandArgs(trailingOnly = TRUE)
@@ -52,6 +53,8 @@ ncols=ncol(geno)
 numVarsInput=ncols-6
 numVarsInput
 
+varNameVec=colnames(geno)[7:ncol(geno)]
+varNameVec
 
 #merge the geno and covariate file
 final_covar=merge(covar, geno, by.x = "FID", by.y = "FID")
@@ -125,12 +128,33 @@ resList
 #loop thru the list and write the data frames ; one file per df
 #name each output with the two varaints names
 
+#loop thru the list and write the data frames ; one file per df
+#name each output with the two varaints names
+
+matDf = data.frame(matrix(0,ncol=numVarsInput,nrow=numVarsInput))
+matDf
+colnames(matDf)=varNameVec
+rownames(matDf)=varNameVec
+matDf
 
 
-#outFileName='test1_Output.txt'
-outFileName='test2_Output.txt'
-#write.table(statDf, file=outFileName, sep='\t', row.names = F, quote = F)
-fwrite(statDf, file=outFileName, sep='\t', row.names = F, quote = F)
+for (num in 1:length(resList))
+{
+  output_tab <- resList[[num]]
+  outTabName <- as.character(paste("chr",sub(":","_",output_tab[9,1]),"_chr",sub(":","_",output_tab[10,1]),".tab", sep=""))
+  write.table(output_tab, file=outTabName, sep='\t', row.names = F, quote = F)
+  #fill the df
+  matDf[output_tab[9,1],output_tab[10,1]]=output_tab[11,5]
+  matDf[output_tab[10,1], output_tab[9,1]]=output_tab[11,5]
+}
+
+#matDf
+
+
+#plot
+matInput=as.matrix(matDf)
+corrplot(matInput, is.corr = FALSE, type="upper")
+
 
 
 
