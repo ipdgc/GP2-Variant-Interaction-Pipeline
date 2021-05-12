@@ -1,74 +1,39 @@
 #load libraries
-library(tidyverse)
-library(data.table)
-library(pheatmap)
 
-#get user line arguments; change this
-#args = commandArgs(trailingOnly = TRUE)
-#cat('1:', args[1], '\n')
-
-#set up input arguments
-
+suppressMessages( library(tidyverse) )
+suppressMessages( library(data.table) )
+suppressMessages( library(corrplot) )
+cat('\nFinsihed loading libraries\n')
+#call script from command line as: Rscript variant_interaction.R [plinkFilePrefix] [snpFile] [outFilePrefix] [covarFile]
+#ex:Rscript variant_interaction.R GWAS_input chr1_4SNPs.txt covariates.txt Test3 
+args = commandArgs(trailingOnly = T)
+cat('\nSetting varaibles\n')
 #set up the plink files/dataset prefix. Should have .bed, .bim, amd .fam files
-plinkFilePrefix='GWAS_input'
-
+plinkFilePrefix=args[1]
 #name of file storing the SNPs to be extracted
 #snpExtractFile='chr1_2SNPs.txt'
-snpExtractFile='chr1_4SNPs.txt'
+snpExtractFile=args[2]
 if(file.exists(snpExtractFile)==F)
 {
   cat('snpExtractFile file not found\n')
   q()
 }
 
+#get the covariate file name
+covariateFile=args[3]
+
 #prefix of output file 
-outFilePrefix='Test2'
+outFilePrefix=args[4]
 
 
-#path to plink cmd
-plinkCmd='/Users/rami/Documents/tools/plink/plink_mac_20210416/plink'
-if(file.exists(plinkCmd)==F)
-{
-  cat('plink cmd not found\n')
-  q()
-}
+cat('\nUser arguments are:\n')
+cat('plink file prefix:', plinkFilePrefix, '\n')
+cat('snpExtract file:', snpExtractFile, '\n')
+cat('covariate file:', covariateFile, '\n')
+cat('output file prefix:', outFilePrefix, '\n')
 
-#read the covariate file
-covariateFile='covariates.txt'
-covar=fread(covariateFile)
-head(covar)
-
-#set up the command
-cmd=str_glue('{plinkCmd} --bfile {plinkFilePrefix}  --extract {snpExtractFile} --recode A --out {outFilePrefix}')
-cat('cmd:', cmd, '\n')
-system(cmd)
-
-#read the raw file
-genotypeRawFile=str_glue('{outFilePrefix}.raw')
-geno=fread(genotypeRawFile)
-head(geno)
-ncols=ncol(geno)
-
-#number of varaints
-numVarsInput=ncols-6
-numVarsInput
-
-varNameVec=colnames(geno)[7:ncol(geno)]
-varNameVec
-
-#merge the geno and covariate file
-final_covar=merge(covar, geno, by.x = "FID", by.y = "FID")
-head(final_covar)
-
-#scale to deal with zero values
-final_covar[,20:(19+numVarsInput)] = final_covar[,20:(19+numVarsInput)] +1
-
-colnames(final_covar)
-#get the 2 pair combinations
-varPairList=combn(colnames(final_covar)[20:(20+numVarsInput-1)], 2, simplify = F)
-varPairList
-
-
+#########################
+########Methods##########
 #function to call regression
 callRegress = function(inVarList,covarDf, inPhenoColumn)
 {
@@ -118,37 +83,77 @@ callRegress = function(inVarList,covarDf, inPhenoColumn)
   statDf$Variable[scndVarIndex]=scndVar
   return(statDf)
 }
+########End of Methods##########
+#########################
+
+
+#read the covar file
+covar=fread(covariateFile)
+head(covar)
+
+#path to plink cmd
+plinkCmd='/Users/rami/Documents/tools/plink/plink_mac_20210416/plink'
+if(file.exists(plinkCmd)==F)
+{
+  cat('plink cmd not found\n')
+  q()
+}
+
+
+#set up the plink command
+cmd=str_glue('{plinkCmd} --bfile {plinkFilePrefix}  --extract {snpExtractFile} --recode A --out {outFilePrefix}')
+cat('cmd:', cmd, '\n')
+system(cmd)
+
+#read the raw file
+genotypeRawFile=str_glue('{outFilePrefix}.raw')
+geno=fread(genotypeRawFile)
+head(geno)
+ncols=ncol(geno)
+
+#number of varaints
+numVarsInput=ncols-6
+numVarsInput
+cat('Number of input variants:', numVarsInput, '\n')
+
+#make a vector of the input variants
+varNameVec=colnames(geno)[7:ncol(geno)]
+varNameVec
+
+#merge the geno and covariate file
+final_covar=merge(covar, geno, by.x = "FID", by.y = "FID")
+head(final_covar)
+
+#scale to deal with zero values
+final_covar[,20:(19+numVarsInput)] = final_covar[,20:(19+numVarsInput)] +1
+
+#colnames(final_covar)
+#get the 2 pair combinations of variants
+varPairList=combn(colnames(final_covar)[20:(20+numVarsInput-1)], 2, simplify = F)
+varPairList
 
 #call the regression model per each two variants
 resList=lapply(varPairList, callRegress, covarDf=final_covar, inPhenoColumn='PHENO')
-length(resList)
-resList
+#length(resList)
+#resList
 
-
-#loop thru the list and write the data frames ; one file per df
-#name each output with the two varaints names
-
-#loop thru the list and write the data frames ; one file per df
-#name each output with the two varaints names
-
+#initialize matrix to fill in p-values for plotting
 matDf = data.frame(matrix(0,ncol=numVarsInput,nrow=numVarsInput))
-matDf
+#matDf
 colnames(matDf)=varNameVec
 rownames(matDf)=varNameVec
-matDf
+#matDf
 
-
+#loop thru the list and write the data frames ; one file per df name each output with the two varaints used
 for (num in 1:length(resList))
 {
-  output_tab <- resList[[num]]
-  outTabName <- as.character(paste("chr",sub(":","_",output_tab[9,1]),"_chr",sub(":","_",output_tab[10,1]),".tab", sep=""))
+  output_tab = resList[[num]]
+  outTabName = as.character(paste(outFilePrefix,"_chr",sub(":","_",output_tab[9,1]),"_chr",sub(":","_",output_tab[10,1]),".tab", sep=""))
   write.table(output_tab, file=outTabName, sep='\t', row.names = F, quote = F)
   #fill the df
   matDf[output_tab[9,1],output_tab[10,1]]=output_tab[11,5]
   matDf[output_tab[10,1], output_tab[9,1]]=output_tab[11,5]
 }
-
-#matDf
 
 
 #plot
@@ -158,6 +163,5 @@ fileName
 png(fileName)
 corrplot(matInput, is.corr = FALSE, type="upper")
 dev.off()
-
 
 
