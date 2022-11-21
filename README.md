@@ -110,9 +110,7 @@ export ANNOVAR_FOLDER="file path to annovar application"
 export PLINK_FOLDER="file path to plink folder"
 
 Rscript final_variant_interaction_script.R
-``
-
-_For more examples, please refer to FUMA [documentation](https://fuma.ctglab.nl/tutorial) and WebGestaltR [documentation](https://cran.r-project.org/web/packages/WebGestaltR/index.html)_
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
