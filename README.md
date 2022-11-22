@@ -109,7 +109,7 @@ e.g.
 export ANNOVAR_FOLDER="file path to annovar application"
 export PLINK_FOLDER="file path to plink folder"
 
-Rscript final_variant_interaction_script.R
+Rscript variant_interaction.R
 ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
